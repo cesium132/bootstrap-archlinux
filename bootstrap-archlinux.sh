@@ -28,11 +28,11 @@ LOG_LEVEL_DEBUG=3
 LOG_LEVEL=${LOG_LEVEL_DEBUG}
 
 # Parameters
-hostname=${$1:"myhostname"}
-localdomain=${$2:"mylocaldomain"}
+hostname=${1:myhostname}
+localdomain=${2:mylocaldomain}
 
-#-------------------------------------------------------------------------------
 # Methods
+#-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
 logTitle() {
