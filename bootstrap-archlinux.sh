@@ -64,8 +64,8 @@ log() {
 #-------------------------------------------------------------------------------
 
 logTitle INFO "Parameters"
-log INFO "hostname=${hostname}
-log INFO "localdomain=${localdomain}
+log INFO "hostname=${hostname}"
+log INFO "localdomain=${localdomain}"
 
 logTitle INFO "Configure usb arch system"
 log INFO "Configure 'fr' keyboard"
