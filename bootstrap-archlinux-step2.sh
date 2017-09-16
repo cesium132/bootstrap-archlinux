@@ -30,6 +30,8 @@ LOG_LEVEL=${LOG_LEVEL_DEBUG}
 # Parameters
 hostname=${1:-myhostname}
 localdomain=${2:-mylocaldomain}
+locale=${3:-fr_FR.UTF-8}
+country=${4:-fr}
 
 # Methods
 #-------------------------------------------------------------------------------
@@ -66,6 +68,8 @@ log() {
 logTitle INFO "Parameters"
 log INFO "hostname=${hostname}"
 log INFO "localdomain=${localdomain}"
+log INFO "locale=${locale}"
+log INFO "country=${country}"
 
 logTitle INFO "Configure new arch system"
 log INFO "Configure hostname file"
@@ -77,13 +81,13 @@ ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
 log INFO "Desactive default configuration in locale.gen file"
 sed -ie 's/^en/#en/' /etc/locale.gen
 log INFO "Active 'FR.UTF-8' configuration in locale.gen file"
-sed -ie 's/^#fr_FR.UTF-8/fr_FR.UTF-8/' /etc/locale.gen
+sed -ie 's/^#${locale}/${locale}/' /etc/locale.gen
 log INFO "Generate locale"
 locale-gen
-log INFO "Add 'fr_FR.UTF-8' to locale.conf file "
-echo LANG="fr_FR.UTF-8" > /etc/locale.conf
-log INFO "Export 'fr_FR.UTF-8' in LANG variable"
-export LANG=fr_FR.UTF-8
+log INFO "Add '${locale}' to locale.conf file "
+echo LANG="${locale}" > /etc/locale.conf
+log INFO "Export '${locale}' in LANG variable"
+export LANG=${locale}
 log INFO "Configure 'fr' keymap in vconsole.conf file"
 echo KEYMAP=fr > /etc/vconsole.conf
 log INFO "Create initial ramdisk"
