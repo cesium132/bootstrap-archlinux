@@ -67,37 +67,7 @@ logTitle INFO "Parameters"
 log INFO "hostname=${hostname}"
 log INFO "localdomain=${localdomain}"
 
-logTitle INFO "Configure usb arch system"
-log INFO "Configure 'fr' keyboard"
-loadkeys fr-pc
-log INFO "Configure ntp"
-timedatectl set-ntp true
-log INFO "Format boot partition on sda1"
-mkfs.ext2 /dev/sda1
-log INFO "Format system partition on sda2"
-mkfs.ext4 /dev/sda2
-log INFO "Format home partition on sda3"
-mkfs.ext4 /dev/sda3
-log INFO "Mount system partition"
-mount /dev/sda2 /mnt
-log INFO "Mount home partition"
-mkdir /mnt/home && mount /dev/sda3 /mnt/home
-log INFO "Mount boot partition"
-mkdir /mnt/boot && mount /dev/sda1 /mnt/boot
-log INFO "Backup rankmirrors file"
-cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
-log INFO "Activate all servers for the best mirror benchmark"
-sed -s 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
-log INFO "Select 10 best mirrors in mirrorlist file"
-rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
-log INFO "Install base packages"
-pacstrap /mnt base base-devel
-log INFO "Generate fstab file"
-genfstab -U -p /mnt >> /mnt/etc/fstab
-
 logTitle INFO "Configure new arch system"
-log INFO "Chroot to the new system"
-arch-chroot /mnt
 log INFO "Configure hostname file"
 echo ${hostname} > /etc/hostname
 log INFO "Configure hosts file"
