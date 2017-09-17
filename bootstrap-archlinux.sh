@@ -28,11 +28,8 @@ LOG_LEVEL_DEBUG=3
 LOG_LEVEL=${LOG_LEVEL_DEBUG}
 
 # Constants
-BOOTSTRAP_ARCHLINUX_RAW_MASTER_REPO="https://raw.githubusercontent.com/cesium132/bootstrap-archlinux/master"
-BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT="bootstrap-archlinux-step2.sh"
 
 # Parameters
-
 hostname=${1:-myhostname}
 localdomain=${2:-mylocaldomain}
 device_boot_partition=${3:-sda1}
@@ -113,16 +110,10 @@ log INFO "Install base packages"
 pacstrap /mnt base base-devel
 log INFO "Generate fstab file"
 genfstab -U -p /mnt >> /mnt/etc/fstab
-log INFO "Download '${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}'"
-wget -O /mnt/root/${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT} "${BOOTSTRAP_ARCHLINUX_RAW_MASTER_REPO}/${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}"
-log INFO "Give execution right to root on ${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}"
-chmod 700 /mnt/root/${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}
-log INFO "Chroot to the new system, then you could now execute '${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}'"
-arch-chroot /mnt
 
-cat << EOF | sudo chroot arch-chroot
 logTitle INFO "Configure new arch system"
-log INFO "Configure hostname file"
+cat << EOF | sudo arch-chroot /mnt
+log INFO "Chroot to the new system"
 echo ${hostname} > /etc/hostname
 log INFO "Configure hosts file"
 echo -e "127.0.1.1\t${hostname}.${localdomain}\t${hostname}" >> /etc/hosts
