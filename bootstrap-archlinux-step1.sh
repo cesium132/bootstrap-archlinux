@@ -32,7 +32,10 @@ BOOTSTRAP_ARCHLINUX_RAW_MASTER_REPO="https://raw.githubusercontent.com/cesium132
 BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT="bootstrap-archlinux-step2.sh"
 
 # Parameters
-keyboard_mapping=${1:-fr-pc}
+device_boot_partition=${1:-sda1}
+device_system_partition=${2:-sda2}
+device_home_partition=${3:-sda3}
+keyboard_mapping=${4:-fr-pc}
 
 
 #-------------------------------------------------------------------------------
@@ -75,23 +78,23 @@ log INFO "Configure '${keyboard_mapping}' keyboard"
 loadkeys ${keyboard_mapping}
 log INFO "Configure ntp"
 timedatectl set-ntp true
-log INFO "Format boot partition on sda1"
-mkfs.ext2 -qF /dev/sda1
-log INFO "Format system partition on sda2"
-mkfs.ext4 -qF /dev/sda2
-log INFO "Format home partition on sda3"
-mkfs.ext4 -qF /dev/sda3
+log INFO "Format boot partition on ${device_boot_partition}"
+mkfs.ext2 -qF /dev/${device_boot_partition}
+log INFO "Format system partition on ${device_system_partition}"
+mkfs.ext4 -qF /dev/${device_system_partition}
+log INFO "Format home partition on ${device_home_partition}"
+mkfs.ext4 -qF /dev/${device_home_partition}
 log INFO "Mount system partition"
-mount /dev/sda2 /mnt
+mount /dev/${device_system_partition} /mnt
 log INFO "Mount home partition"
-mkdir /mnt/home && mount /dev/sda3 /mnt/home
+mkdir /mnt/home && mount /dev/${device_home_partition} /mnt/home
 log INFO "Mount boot partition"
-mkdir /mnt/boot && mount /dev/sda1 /mnt/boot
+mkdir /mnt/boot && mount /dev/${device_boot_partition} /mnt/boot
 log INFO "Backup rankmirrors file"
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 log INFO "Activate all servers for the best mirror benchmark"
 sed -ie 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
-log INFO "Select 10 best mirrors in mirrorlist file"
+log INFO "Determine the 10 best mirrors in mirrorlist file"
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 log INFO "Install base packages"
 pacstrap /mnt base base-devel

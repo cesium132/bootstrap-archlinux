@@ -30,6 +30,7 @@ LOG_LEVEL=${LOG_LEVEL_DEBUG}
 # Parameters
 hostname=${1:-myhostname}
 localdomain=${2:-mylocaldomain}
+device_system_partition=${3:-sda2}
 locale=${3:-fr_FR.UTF-8}
 country=${4:-fr}
 zoneinfo=${5:-"Europe/Paris"}
@@ -76,7 +77,7 @@ logTitle INFO "Configure new arch system"
 log INFO "Configure hostname file"
 echo ${hostname} > /etc/hostname
 log INFO "Configure hosts file"
-echo "127.0.1.1 ${hostname}.${localdomain} ${hostname}" >> /etc/hosts
+echo -e "127.0.1.1\t${hostname}.${localdomain}\t${hostname}" >> /etc/hosts
 log INFO "Disable default localtime"
 rm /etc/localtime
 log INFO "Configure localtime"
@@ -95,6 +96,8 @@ log INFO "Configure '${country}' keymap in vconsole.conf file"
 echo KEYMAP=${country} > /etc/vconsole.conf
 log INFO "Create initial ramdisk"
 mkinitcpio -p linux
+log INFO "Desactive default configuration in locale.gen file"
+sed -ie "s/sda2/${device_system_partition}/" /etc/locale.gen
 
 logTitle INFO "Bootloader installation"
 log INFO "Install syslinux package"
@@ -103,7 +106,7 @@ log INFO "Configure syslinux for BIOS system"
 syslinux-install_update -iam
 
 logTitle INFO "End of installation"
-log INFO "Exit chroot, you can now execute :"
+log INFO "You can now exit chroot and unmount the new arch installation :"
 log INFO " $ exit"
 log INFO " $ umount -R /mnt"
-log INFO "You could reboot and remove the usb key"
+log INFO "Then, you could reboot and remove the usb key"
