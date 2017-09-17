@@ -104,7 +104,7 @@ log INFO "Backup rankmirrors file"
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 log INFO "Activate all servers for the best mirror benchmark"
 sed -ie 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
-log INFO "Determine the 10 best mirrors in mirrorlist file"
+log INFO "Determine the 10 best mirrors in mirrorlist file (this may take 2-3min)"
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 log INFO "Install base packages"
 pacstrap /mnt base base-devel
@@ -135,18 +135,18 @@ log INFO "Configure '${country}' keymap in vconsole.conf file"
 echo KEYMAP=${country} > /etc/vconsole.conf
 log INFO "Create initial ramdisk"
 mkinitcpio -p linux
-log INFO "Desactive default configuration in locale.gen file"
-sed -ie "s/sda2/${device_system_partition}/" /boot/syslinux/syslinux.cfg
 
 logTitle INFO "Bootloader installation"
 log INFO "Install syslinux package"
 pacman -Sq --noconfirm syslinux
 log INFO "Configure syslinux for BIOS system"
 syslinux-install_update -iam
+log INFO "Desactive default configuration in locale.gen file"
+sed -ie "s/sda3/${device_system_partition}/" /boot/syslinux/syslinux.cfg
 EOF
 
 logTitle INFO "End of installation"
 log INFO "Exit chroot done"
 log INFO "Unmount the new arch installation"
 umount -R /mnt
-log INFO "You could reboot and remove the usb key"
+log INFO "You could now reboot and remove the usb key"

@@ -97,7 +97,7 @@ echo KEYMAP=${country} > /etc/vconsole.conf
 log INFO "Create initial ramdisk"
 mkinitcpio -p linux
 log INFO "Desactive default configuration in locale.gen file"
-sed -ie "s/sda2/${device_system_partition}/" /boot/syslinux/syslinux.cfg
+sed -ie "s/sda3/${device_system_partition}/" /boot/syslinux/syslinux.cfg
 
 logTitle INFO "Bootloader installation"
 log INFO "Install syslinux package"

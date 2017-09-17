@@ -94,7 +94,7 @@ log INFO "Backup rankmirrors file"
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 log INFO "Activate all servers for the best mirror benchmark"
 sed -ie 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
-log INFO "Determine the 10 best mirrors in mirrorlist file"
+log INFO "Determine the 10 best mirrors in mirrorlist file (this may take 2-3min)"
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 log INFO "Install base packages"
 pacstrap /mnt base base-devel
