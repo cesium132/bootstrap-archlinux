@@ -98,7 +98,7 @@ pacstrap /mnt base base-devel
 log INFO "Generate fstab file"
 genfstab -U -p /mnt >> /mnt/etc/fstab
 log INFO "Download '${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}'"
-wget "${BOOTSTRAP_ARCHLINUX_RAW_MASTER_REPO}/${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}" /mnt/root/
+wget -O /mnt/root/${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT} "${BOOTSTRAP_ARCHLINUX_RAW_MASTER_REPO}/${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}"
 log INFO "Give execution right to root on ${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}"
 chmod 700 /mnt/root/${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}
 log INFO "Chroot to the new system, then you could now execute '${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}'"
