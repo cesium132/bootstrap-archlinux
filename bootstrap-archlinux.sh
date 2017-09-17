@@ -86,7 +86,7 @@ log INFO "keyboard_mapping=${keyboard_mapping}"
 
 logTitle INFO "Input"
 log INFO "Enter the new root password:"
-read root_password
+read -s root_password
 
 logTitle INFO "Configure usb arch system"
 log INFO "Configure '${keyboard_mapping}' keyboard"
