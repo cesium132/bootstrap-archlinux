@@ -90,7 +90,7 @@ mkdir /mnt/boot && mount /dev/sda1 /mnt/boot
 log INFO "Backup rankmirrors file"
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.backup
 log INFO "Activate all servers for the best mirror benchmark"
-sed -s 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
+sed -ie 's/^#Server/Server/' /etc/pacman.d/mirrorlist.backup
 log INFO "Select 10 best mirrors in mirrorlist file"
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.backup > /etc/pacman.d/mirrorlist
 log INFO "Install base packages"
