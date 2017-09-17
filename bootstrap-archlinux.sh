@@ -163,7 +163,7 @@ log INFO "Exit chroot done"
 
 logTitle INFO "End of installation"
 log INFO "Prepare init root password script"
-echo "root:${root_password} | chpasswd" > /mnt/${INIT_ROOT_PASSWORD_FILE}
+echo "echo 'root:${root_password}' | chpasswd" > /mnt/${INIT_ROOT_PASSWORD_FILE}
 log INFO "Give execution right to ${INIT_ROOT_PASSWORD_FILE} file"
 chmod 700 /mnt/${INIT_ROOT_PASSWORD_FILE}
 log INFO "Init the root password"
