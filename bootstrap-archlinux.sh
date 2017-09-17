@@ -84,6 +84,10 @@ log INFO "locale=${locale}"
 log INFO "country=${country}"
 log INFO "keyboard_mapping=${keyboard_mapping}"
 
+logTitle INFO "Input"
+log INFO "Enter the new root password:"
+read root_password
+
 logTitle INFO "Configure usb arch system"
 log INFO "Configure '${keyboard_mapping}' keyboard"
 loadkeys ${keyboard_mapping}
@@ -150,8 +154,6 @@ EOF
 log INFO "Exit chroot done"
 
 logTitle INFO "End of installation"
-log INFO "Enter the new root password:"
-read root_password
 log INFO "Prepare init root password script"
 echo "root:${root_password} | chpasswd" > /mnt/${INIT_ROOT_PASSWORD_FILE}
 log INFO "Init the root password"
