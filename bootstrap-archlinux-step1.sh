@@ -76,11 +76,11 @@ loadkeys ${keyboard_mapping}
 log INFO "Configure ntp"
 timedatectl set-ntp true
 log INFO "Format boot partition on sda1"
-mkfs.ext2 /dev/sda1
+mkfs.ext2 -F /dev/sda1
 log INFO "Format system partition on sda2"
-mkfs.ext4 /dev/sda2
+mkfs.ext4 -F /dev/sda2
 log INFO "Format home partition on sda3"
-mkfs.ext4 /dev/sda3
+mkfs.ext4 -F /dev/sda3
 log INFO "Mount system partition"
 mount /dev/sda2 /mnt
 log INFO "Mount home partition"
