@@ -111,8 +111,39 @@ pacstrap /mnt base base-devel
 log INFO "Generate fstab file"
 genfstab -U -p /mnt >> /mnt/etc/fstab
 
-logTitle INFO "Configure new arch system"
 cat << EOF | sudo arch-chroot /mnt
+logTitle() {
+  log $1 ""
+  log $1 "----------------------------------------------"
+  log $1 "   # $2"
+  log $1 "----------------------------------------------"
+}
+log() {
+  case "$1" in
+    ERROR) log_level_code=${LOG_LEVEL_ERROR} ;;
+    INFO) log_level_code=${LOG_LEVEL_INFO} ;;
+    DEBUG) log_level_code=${LOG_LEVEL_DEBUG} ;;
+    *)
+        log ERROR "Invalid log level: '$1', log level must be ERROR, INFO or DEBUG"
+        exit ${EXIT_CODE_INVALID_PARAMETER}
+        ;;
+  esac
+  if (( "${LOG_LEVEL}" >= "$log_level_code" )); then
+    horodate=$(date +%Y-%m-%d:%H:%M:%S)
+    echo "${horodate} $1 $2"
+  fi
+}
+logTitle INFO "Parameters"
+log INFO "hostname=${hostname}"
+log INFO "localdomain=${localdomain}"
+log INFO "device_boot_partition=${device_boot_partition}"
+log INFO "device_system_partition=${device_system_partition}"
+log INFO "device_home_partition=${device_home_partition}"
+log INFO "locale=${locale}"
+log INFO "country=${country}"
+log INFO "keyboard_mapping=${keyboard_mapping}"
+
+logTitle INFO "Configure new arch system"
 log INFO "Chroot to the new system"
 echo ${hostname} > /etc/hostname
 log INFO "Configure hosts file"
