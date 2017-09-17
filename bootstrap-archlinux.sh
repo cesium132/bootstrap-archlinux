@@ -18,6 +18,11 @@ set -o pipefail
 set -o nounset
 #set -o xtrace
 
+# Set magic variables for current file & dir
+__dir="$(cd "$(dirname "$0")" && pwd)"
+__file="${__dir}/$(basename "$0")"
+__base="$(basename ${__file} .sh)"
+
 # Exit Codes
 EXIT_CODE_INVALID_PARAMETER=1
 
@@ -28,7 +33,8 @@ LOG_LEVEL_DEBUG=3
 LOG_LEVEL=${LOG_LEVEL_DEBUG}
 
 # Constants
-readonly INIT_ROOT_PASSWORD_FILE=init_root_password.sh
+readonly INIT_ROOT_PASSWORD_FILE="init_root_password.sh"
+readonly LOG_FILE="${__base}.log"
 
 # Parameters
 hostname=${1:-myhostname}
@@ -73,6 +79,8 @@ log() {
 #-------------------------------------------------------------------------------
 # Main
 #-------------------------------------------------------------------------------
+
+(
 
 logTitle INFO "Parameters"
 log INFO "hostname=${hostname}"
@@ -156,10 +164,17 @@ log INFO "Exit chroot done"
 logTitle INFO "End of installation"
 log INFO "Prepare init root password script"
 echo "root:${root_password} | chpasswd" > /mnt/${INIT_ROOT_PASSWORD_FILE}
+log INFO "Give execution right to ${INIT_ROOT_PASSWORD_FILE} file"
+chmod 700 /mnt/${INIT_ROOT_PASSWORD_FILE}
 log INFO "Init the root password"
 arch-chroot /mnt "/${INIT_ROOT_PASSWORD_FILE}"
 log INFO "Delete ${INIT_ROOT_PASSWORD_FILE} file"
 rm -f /mnt/${INIT_ROOT_PASSWORD_FILE}
+
+) 2>&1 | tee -a $LOG_FILE
+
+log INFO "Copy log file to the new arch installation"
+mv ${LOG_FILE} /mnt/
 log INFO "Unmount the new arch installation"
 umount -R /mnt
 log INFO "You could now reboot and remove the usb key"
