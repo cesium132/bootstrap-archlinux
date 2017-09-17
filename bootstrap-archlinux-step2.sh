@@ -101,7 +101,7 @@ sed -ie "s/sda2/${device_system_partition}/" /etc/locale.gen
 
 logTitle INFO "Bootloader installation"
 log INFO "Install syslinux package"
-pacman -Sq syslinux
+pacman -Sq --noconfirm syslinux
 log INFO "Configure syslinux for BIOS system"
 syslinux-install_update -iam
 
