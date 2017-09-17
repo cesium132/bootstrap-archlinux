@@ -76,7 +76,7 @@ logTitle INFO "Configure new arch system"
 log INFO "Configure hostname file"
 echo ${hostname} > /etc/hostname
 log INFO "Configure hosts file"
-echo '127.0.1.1 ${hostname}.${localdomain} ${hostname}' >> /etc/hosts
+echo "127.0.1.1 ${hostname}.${localdomain} ${hostname}" >> /etc/hosts
 log INFO "Disable default localtime"
 rm /etc/localtime
 log INFO "Configure localtime"
@@ -84,21 +84,21 @@ ln -s /usr/share/zoneinfo/${zoneinfo} /etc/localtime
 log INFO "Desactive default configuration in locale.gen file"
 sed -ie 's/^en/#en/' /etc/locale.gen
 log INFO "Active '${locale}' configuration in locale.gen file"
-sed -ie 's/^#${locale}/${locale}/' /etc/locale.gen
+sed -ie "s/^#${locale}/${locale}/" /etc/locale.gen
 log INFO "Generate locale"
 locale-gen
 log INFO "Add '${locale}' to locale.conf file "
 echo LANG="${locale}" > /etc/locale.conf
 log INFO "Export '${locale}' in LANG variable"
 export LANG=${locale}
-log INFO "Configure 'fr' keymap in vconsole.conf file"
-echo KEYMAP=fr > /etc/vconsole.conf
+log INFO "Configure '${country}' keymap in vconsole.conf file"
+echo KEYMAP=${country} > /etc/vconsole.conf
 log INFO "Create initial ramdisk"
 mkinitcpio -p linux
 
 logTitle INFO "Bootloader installation"
 log INFO "Install syslinux package"
-pacman -S syslinux
+pacman -Sq syslinux
 log INFO "Configure syslinux for BIOS system"
 syslinux-install_update -iam
 
