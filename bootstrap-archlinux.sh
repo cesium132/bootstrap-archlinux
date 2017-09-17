@@ -28,6 +28,7 @@ LOG_LEVEL_DEBUG=3
 LOG_LEVEL=${LOG_LEVEL_DEBUG}
 
 # Constants
+readonly INIT_ROOT_PASSWORD_FILE=init_root_password.sh
 
 # Parameters
 hostname=${1:-myhostname}
@@ -146,11 +147,17 @@ syslinux-install_update -iam
 echo "Desactive default configuration in locale.gen file"
 sed -ie "s/sda3/${device_system_partition}/" /boot/syslinux/syslinux.cfg
 EOF
+log INFO "Exit chroot done"
 
 logTitle INFO "End of installation"
-log INFO "Exit chroot done"
-log INFO "Set the root password"
-passwd --root /mnt root
+log INFO "Enter the new root password:"
+read root_password
+log INFO "Prepare init root password script"
+echo "root:${root_password} | chpasswd" > /mnt/${INIT_ROOT_PASSWORD_FILE}
+log INFO "Init the root password"
+arch-chroot /mnt "/${INIT_ROOT_PASSWORD_FILE}"
+log INFO "Delete ${INIT_ROOT_PASSWORD_FILE} file"
+rm -f /mnt/${INIT_ROOT_PASSWORD_FILE}
 log INFO "Unmount the new arch installation"
 umount -R /mnt
 log INFO "You could now reboot and remove the usb key"
