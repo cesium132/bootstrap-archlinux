@@ -135,8 +135,6 @@ echo "Configure '${country}' keymap in vconsole.conf file"
 echo KEYMAP=${country} > /etc/vconsole.conf
 echo "Create initial ramdisk"
 mkinitcpio -p linux
-log INFO "Set the root password"
-passwd
 echo "Install openssh package"
 pacman -Sq --noconfirm openssh
 
@@ -151,6 +149,8 @@ EOF
 
 logTitle INFO "End of installation"
 log INFO "Exit chroot done"
+log INFO "Set the root password"
+passwd --root /mnt root
 log INFO "Unmount the new arch installation"
 umount -R /mnt
 log INFO "You could now reboot and remove the usb key"
