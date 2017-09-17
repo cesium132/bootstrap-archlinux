@@ -32,6 +32,7 @@ hostname=${1:-myhostname}
 localdomain=${2:-mylocaldomain}
 locale=${3:-fr_FR.UTF-8}
 country=${4:-fr}
+zoneinfo=${5:-"Europe/Paris"}
 
 # Methods
 #-------------------------------------------------------------------------------
@@ -76,11 +77,13 @@ log INFO "Configure hostname file"
 echo ${hostname} > /etc/hostname
 log INFO "Configure hosts file"
 echo '127.0.1.1 ${hostname}.${localdomain} ${hostname}' >> /etc/hosts
+log INFO "Disable default localtime"
+rm /etc/localtime
 log INFO "Configure localtime"
-ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
+ln -s /usr/share/zoneinfo/${zoneinfo} /etc/localtime
 log INFO "Desactive default configuration in locale.gen file"
 sed -ie 's/^en/#en/' /etc/locale.gen
-log INFO "Active 'FR.UTF-8' configuration in locale.gen file"
+log INFO "Active '${locale}' configuration in locale.gen file"
 sed -ie 's/^#${locale}/${locale}/' /etc/locale.gen
 log INFO "Generate locale"
 locale-gen
