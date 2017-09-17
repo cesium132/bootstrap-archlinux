@@ -93,12 +93,12 @@ log INFO "country=${country}"
 log INFO "keyboard_mapping=${keyboard_mapping}"
 
 logTitle INFO "Input"
+log INFO "Configure '${keyboard_mapping}' keyboard"
+loadkeys ${keyboard_mapping}
 log INFO "Enter the new root password:"
 read -s root_password
 
 logTitle INFO "Configure usb arch system"
-log INFO "Configure '${keyboard_mapping}' keyboard"
-loadkeys ${keyboard_mapping}
 log INFO "Configure ntp"
 timedatectl set-ntp true
 log INFO "Format boot partition on ${device_boot_partition}"
