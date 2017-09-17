@@ -112,67 +112,46 @@ log INFO "Generate fstab file"
 genfstab -U -p /mnt >> /mnt/etc/fstab
 
 cat << EOF | sudo arch-chroot /mnt
-logTitle() {
-  log $1 ""
-  log $1 "----------------------------------------------"
-  log $1 "   # $2"
-  log $1 "----------------------------------------------"
-}
-log() {
-  case "$1" in
-    ERROR) log_level_code=${LOG_LEVEL_ERROR} ;;
-    INFO) log_level_code=${LOG_LEVEL_INFO} ;;
-    DEBUG) log_level_code=${LOG_LEVEL_DEBUG} ;;
-    *)
-        log ERROR "Invalid log level: '$1', log level must be ERROR, INFO or DEBUG"
-        exit ${EXIT_CODE_INVALID_PARAMETER}
-        ;;
-  esac
-  if (( "${LOG_LEVEL}" >= "$log_level_code" )); then
-    horodate=$(date +%Y-%m-%d:%H:%M:%S)
-    echo "${horodate} $1 $2"
-  fi
-}
-logTitle INFO "Parameters"
-log INFO "hostname=${hostname}"
-log INFO "localdomain=${localdomain}"
-log INFO "device_boot_partition=${device_boot_partition}"
-log INFO "device_system_partition=${device_system_partition}"
-log INFO "device_home_partition=${device_home_partition}"
-log INFO "locale=${locale}"
-log INFO "country=${country}"
-log INFO "keyboard_mapping=${keyboard_mapping}"
+echo -e "\n-- Parameters --"
+echo "hostname=${hostname}"
+echo "localdomain=${localdomain}"
+echo "device_boot_partition=${device_boot_partition}"
+echo "device_system_partition=${device_system_partition}"
+echo "device_home_partition=${device_home_partition}"
+echo "locale=${locale}"
+echo "country=${country}"
+echo "keyboard_mapping=${keyboard_mapping}"
 
-logTitle INFO "Configure new arch system"
-log INFO "Chroot to the new system"
+echo -e "\n-- Configure new arch system --"
+echo "Chroot to the new system"
 echo ${hostname} > /etc/hostname
-log INFO "Configure hosts file"
+echo "Configure hosts file"
 echo -e "127.0.1.1\t${hostname}.${localdomain}\t${hostname}" >> /etc/hosts
-log INFO "Disable default localtime"
+echo "Disable default localtime"
 rm /etc/localtime
-log INFO "Configure localtime"
+echo "Configure localtime"
 ln -s /usr/share/zoneinfo/${zoneinfo} /etc/localtime
-log INFO "Desactive default configuration in locale.gen file"
+echo "Desactive default configuration in locale.gen file"
 sed -ie 's/^en/#en/' /etc/locale.gen
-log INFO "Active '${locale}' configuration in locale.gen file"
+echo "Active '${locale}' configuration in locale.gen file"
 sed -ie "s/^#${locale}/${locale}/" /etc/locale.gen
-log INFO "Generate locale"
+echo "Generate locale"
 locale-gen
-log INFO "Add '${locale}' to locale.conf file "
+echo "Add '${locale}' to locale.conf file "
 echo LANG="${locale}" > /etc/locale.conf
-log INFO "Export '${locale}' in LANG variable"
+echo "Export '${locale}' in LANG variable"
 export LANG=${locale}
-log INFO "Configure '${country}' keymap in vconsole.conf file"
+echo "Configure '${country}' keymap in vconsole.conf file"
 echo KEYMAP=${country} > /etc/vconsole.conf
-log INFO "Create initial ramdisk"
+echo "Create initial ramdisk"
 mkinitcpio -p linux
 
-logTitle INFO "Bootloader installation"
-log INFO "Install syslinux package"
+echo -e "\n-- Bootloader installation --"
+echo "Install syslinux package"
 pacman -Sq --noconfirm syslinux
-log INFO "Configure syslinux for BIOS system"
+echo "Configure syslinux for BIOS system"
 syslinux-install_update -iam
-log INFO "Desactive default configuration in locale.gen file"
+echo "Desactive default configuration in locale.gen file"
 sed -ie "s/sda3/${device_system_partition}/" /boot/syslinux/syslinux.cfg
 EOF
 
