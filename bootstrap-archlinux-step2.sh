@@ -102,10 +102,8 @@ pacman -S syslinux
 log INFO "Configure syslinux for BIOS system"
 syslinux-install_update -iam
 
-
-logTitle INFO "Prepare end of installation"
-log INFO "Exit chroot"
-exit
-log INFO "Umount the new arch system"
-umount -R /mnt
+logTitle INFO "End of installation"
+log INFO "Exit chroot, you can now execute :"
+log INFO " $ exit"
+log INFO " $ umount -R /mnt"
 log INFO "You could reboot and remove the usb key"
