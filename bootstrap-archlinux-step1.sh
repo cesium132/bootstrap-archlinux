@@ -27,11 +27,16 @@ LOG_LEVEL_INFO=2
 LOG_LEVEL_DEBUG=3
 LOG_LEVEL=${LOG_LEVEL_DEBUG}
 
+# Constants
+BOOTSTRAP_ARCHLINUX_RAW_MASTER_REPO="https://raw.githubusercontent.com/cesium132/bootstrap-archlinux/master"
+BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT="bootstrap-archlinux-step2.sh"
+
 # Parameters
 keyboard_mapping=${1:-fr-pc}
 
-# Methods
+
 #-------------------------------------------------------------------------------
+# Methods
 #-------------------------------------------------------------------------------
 
 logTitle() {
@@ -92,6 +97,9 @@ log INFO "Install base packages"
 pacstrap /mnt base base-devel
 log INFO "Generate fstab file"
 genfstab -U -p /mnt >> /mnt/etc/fstab
-log INFO "Chroot to the new system"
+log INFO "Download '${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}'"
+wget "${BOOTSTRAP_ARCHLINUX_RAW_MASTER_REPO}/${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}" /mnt/root/
+log INFO "Give execution right to root on ${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}"
+chmod 700 /mnt/root/${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}
+log INFO "Chroot to the new system, then you could now execute '${BOOTSTRAP_ARCHLINUX_STEP2_SCRIPT}'"
 arch-chroot /mnt
-log INFO "You could execute now 'bootsrap-archlinux-step2.sh'"
