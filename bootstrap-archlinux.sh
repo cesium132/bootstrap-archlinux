@@ -111,19 +111,9 @@ pacstrap /mnt base base-devel
 log INFO "Generate fstab file"
 genfstab -U -p /mnt >> /mnt/etc/fstab
 
-cat << EOF | sudo arch-chroot /mnt
-echo -e "\n-- Parameters --"
-echo "hostname=${hostname}"
-echo "localdomain=${localdomain}"
-echo "device_boot_partition=${device_boot_partition}"
-echo "device_system_partition=${device_system_partition}"
-echo "device_home_partition=${device_home_partition}"
-echo "locale=${locale}"
-echo "country=${country}"
-echo "keyboard_mapping=${keyboard_mapping}"
-
-echo -e "\n-- Configure new arch system --"
+logTitle INFO "Configure new arch system"
 echo "Chroot to the new system"
+cat << EOF | sudo arch-chroot /mnt
 echo ${hostname} > /etc/hostname
 echo "Configure hosts file"
 echo -e "127.0.1.1\t${hostname}.${localdomain}\t${hostname}" >> /etc/hosts
@@ -145,6 +135,10 @@ echo "Configure '${country}' keymap in vconsole.conf file"
 echo KEYMAP=${country} > /etc/vconsole.conf
 echo "Create initial ramdisk"
 mkinitcpio -p linux
+log INFO "Set the root password"
+passwd
+echo "Install openssh package"
+pacman -Sq --noconfirm openssh
 
 echo -e "\n-- Bootloader installation --"
 echo "Install syslinux package"
