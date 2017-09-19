@@ -110,9 +110,9 @@ log INFO "keyboard_mapping=${keyboard_mapping}"
 logTitle INFO "Input"
 log INFO "Configure '${keyboard_mapping}' keyboard"
 loadkeys ${keyboard_mapping}
-log INFO "Enter the new root password:"
+log INFO "Enter the new 'root' password:"
 read -s root_password
-log INFO "Enter the new user password:"
+log INFO "Enter the new '${user_login}' password:"
 read -s user_password
 
 logTitle INFO "Configure usb arch system"
@@ -172,7 +172,10 @@ systemctl enable dhcpcd
 echo "Enable openssh service"
 systemctl enable sshd
 echo "Add user ${user_login}"
-useradd -g wheel ansible
+useradd -m -g wheel ${user_login}
+echo "Allow members of group wheel to execute any command without password"
+sed -ie "s/^# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/" /etc/sudoers
+
 
 echo -e "\n-- Bootloader installation --"
 echo "Install syslinux package"
