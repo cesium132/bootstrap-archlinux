@@ -33,19 +33,20 @@ LOG_LEVEL_DEBUG=3
 LOG_LEVEL=${LOG_LEVEL_DEBUG}
 
 # Constants
-readonly INIT_ROOT_PASSWORD_FILE="init_root_password.sh"
+readonly TMP_INIT_PASSWORD_FILE="tmp_init_password.sh"
 readonly LOG_FILE="${__base}.log"
 
 # Parameters
-hostname=${1:-myhostname}
-localdomain=${2:-mylocaldomain}
-device_boot_partition=${3:-sda1}
-device_system_partition=${4:-sda2}
-device_home_partition=${5:-sda3}
-locale=${6:-fr_FR.UTF-8}
-country=${7:-fr}
-zoneinfo=${8:-"Europe/Paris"}
-keyboard_mapping=${9:-fr-pc}
+user_login=${1:-user_login}
+hostname=${2:-myhostname}
+localdomain=${3:-mylocaldomain}
+device_boot_partition=${4:-sda1}
+device_system_partition=${5:-sda2}
+device_home_partition=${6:-sda3}
+locale=${7:-fr_FR.UTF-8}
+country=${8:-fr}
+zoneinfo=${9:-"Europe/Paris"}
+keyboard_mapping=${10:-fr-pc}
 
 
 #-------------------------------------------------------------------------------
@@ -75,6 +76,19 @@ log() {
   fi
 }
 
+initPassword() {
+  login = $1
+  password = $2
+  log INFO "Prepare init password script"
+  echo "echo '${login}:${password}' | chpasswd" > /mnt/${TMP_INIT_PASSWORD_FILE}
+  log INFO "Give execution right to ${TMP_INIT_PASSWORD_FILE} file"
+  chmod 700 /mnt/${TMP_INIT_PASSWORD_FILE}
+  log INFO "Init the ${login} password"
+  arch-chroot /mnt "/${TMP_INIT_PASSWORD_FILE}"
+  log INFO "Delete ${TMP_INIT_PASSWORD_FILE} file"
+  rm -f /mnt/${TMP_INIT_PASSWORD_FILE}
+}
+
 
 #-------------------------------------------------------------------------------
 # Main
@@ -83,6 +97,7 @@ log() {
 (
 
 logTitle INFO "Parameters"
+log INFO "user_login=${user_login}"
 log INFO "hostname=${hostname}"
 log INFO "localdomain=${localdomain}"
 log INFO "device_boot_partition=${device_boot_partition}"
@@ -97,6 +112,8 @@ log INFO "Configure '${keyboard_mapping}' keyboard"
 loadkeys ${keyboard_mapping}
 log INFO "Enter the new root password:"
 read -s root_password
+log INFO "Enter the new user password:"
+read -s user_password
 
 logTitle INFO "Configure usb arch system"
 log INFO "Configure ntp"
@@ -132,7 +149,7 @@ echo "Configure hosts file"
 echo -e "127.0.1.1\t${hostname}.${localdomain}\t${hostname}" >> /etc/hosts
 echo "Disable default localtime"
 rm /etc/localtime
-echo "Configure localtime"
+echo "Configure localtime on ${zoneinfo}"
 ln -s /usr/share/zoneinfo/${zoneinfo} /etc/localtime
 echo "Desactive default configuration in locale.gen file"
 sed -ie 's/^en/#en/' /etc/locale.gen
@@ -150,6 +167,12 @@ echo "Create initial ramdisk"
 mkinitcpio -p linux
 echo "Install openssh package"
 pacman -Sq --noconfirm openssh
+echo "Enable DHCP service"
+systemctl enable dhcpcd
+echo "Enable openssh service"
+systemctl enable sshd
+echo "Add user ${user_login}"
+useradd -g wheel ansible
 
 echo -e "\n-- Bootloader installation --"
 echo "Install syslinux package"
@@ -158,20 +181,12 @@ echo "Configure syslinux for BIOS system"
 syslinux-install_update -iam
 echo "Desactive default configuration in locale.gen file"
 sed -ie "s/sda3/${device_system_partition}/" /boot/syslinux/syslinux.cfg
-echo "Enable DHCP service"
-systemctl enable dhcpcd
 EOF
 log INFO "Exit chroot done"
 
 logTitle INFO "End of installation"
-log INFO "Prepare init root password script"
-echo "echo 'root:${root_password}' | chpasswd" > /mnt/${INIT_ROOT_PASSWORD_FILE}
-log INFO "Give execution right to ${INIT_ROOT_PASSWORD_FILE} file"
-chmod 700 /mnt/${INIT_ROOT_PASSWORD_FILE}
-log INFO "Init the root password"
-arch-chroot /mnt "/${INIT_ROOT_PASSWORD_FILE}"
-log INFO "Delete ${INIT_ROOT_PASSWORD_FILE} file"
-rm -f /mnt/${INIT_ROOT_PASSWORD_FILE}
+initPassword "root" "${root_password}"
+initPassword "${user_login}" "${user_password}"
 
 ) 2>&1 | tee -a $LOG_FILE
 
