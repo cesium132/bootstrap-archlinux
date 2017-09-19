@@ -77,8 +77,8 @@ log() {
 }
 
 initPassword() {
-  login = $1
-  password = $2
+  login=$1
+  password=$2
   log INFO "Prepare init password script"
   echo "echo '${login}:${password}' | chpasswd" > /mnt/${TMP_INIT_PASSWORD_FILE}
   log INFO "Give execution right to ${TMP_INIT_PASSWORD_FILE} file"
