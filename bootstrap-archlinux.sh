@@ -158,6 +158,8 @@ echo "Configure syslinux for BIOS system"
 syslinux-install_update -iam
 echo "Desactive default configuration in locale.gen file"
 sed -ie "s/sda3/${device_system_partition}/" /boot/syslinux/syslinux.cfg
+echo "Enable DHCP service"
+systemctl enable dhcpcd
 EOF
 log INFO "Exit chroot done"
 
