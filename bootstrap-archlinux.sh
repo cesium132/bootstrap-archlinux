@@ -172,7 +172,7 @@ systemctl enable dhcpcd
 echo "Enable openssh service"
 systemctl enable sshd
 echo "Add user ${user_login}"
-useradd -m -g wheel ${user_login}
+useradd -m -g users -G wheel ${user_login}
 echo "Allow members of group wheel to execute any command without password"
 sed -ie "s/^# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/" /etc/sudoers
 
